@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/com/chat/commun/evenement/Evenement.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/com/chat/commun/evenement/EvenementUtil.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/com/chat/commun/thread/ThreadEcouteurDeTexte.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/com/chat/programme/Main.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/com/chat/serveur/GestionnaireEvenementServeur.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/com/chat/serveur/Serveur.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/com/chat/serveur/ThreadEcouteurDeConnexions.java" charset="windows-1252" />
+  </component>
+</project>
