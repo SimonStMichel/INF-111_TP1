@@ -25,6 +25,19 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     }
 
     /**
+     * Méthode qui envoie un message reçu par le serveur à tout les utilisateurs connectés.
+     *
+     * @param str le message.
+     * @param aliasExpediteur l'alias de l'expéditeur du message
+     */
+    public void envoyerATousSauf(String str, String aliasExpediteur) {
+        for (Connexion connexion:serveur.connectes) {
+            if(connexion.getAlias().equals(aliasExpediteur)) continue;
+            connexion.envoyer(aliasExpediteur + " >> " + str);
+        }
+    }
+
+    /**
      * Méthode de gestion d'événements. Cette méthode contiendra le code qui gère les réponses obtenues d'un client.
      *
      * @param evenement L'événement à gérer.
@@ -51,7 +64,9 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     break;
 
                 //Ajoutez ici d’autres case pour gérer d’autres commandes.
-
+                case "MSG": //Envoie un message d'un utilisateur à tout le monde sauf lui :
+                    envoyerATousSauf(  evenement.getArgument(),  cnx.getAlias());
+                    break;
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
                     cnx.envoyer(msg);
