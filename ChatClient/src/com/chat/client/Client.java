@@ -95,7 +95,6 @@ public class Client implements Lecteur {
      * @since   2023-09-20
      */
     public void lire() {
-
         String[] t;
         Evenement evenement;
         String texte = connexion.getAvailableText();
@@ -106,6 +105,7 @@ public class Client implements Lecteur {
             gestionnaireEvenementClient.traiter(evenement);
         }
     }
+
     /**
      * Cette méthode retourne l'adresse IP du serveur sur lequel ce client se connecte.
      *
@@ -120,6 +120,7 @@ public class Client implements Lecteur {
     public void setAdrServeur(String adrServeur) {
         this.adrServeur = adrServeur;
     }
+
     /**
      * Indique si le client est connecté à un serveur..
      *
