@@ -33,7 +33,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     public void envoyerATousSauf(String str, String aliasExpediteur) {
         for (Connexion connexion:serveur.connectes) {
             if(connexion.getAlias().equals(aliasExpediteur)) continue;
-            connexion.envoyer(aliasExpediteur + " >> " + str);
+            connexion.envoyer(str);
         }
     }
 
@@ -65,7 +65,9 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
 
                 //Ajoutez ici d’autres case pour gérer d’autres commandes.
                 case "MSG": //Envoie un message d'un utilisateur à tout le monde sauf lui :
-                    envoyerATousSauf(  evenement.getArgument(),  cnx.getAlias());
+                    String message = cnx.getAlias() + " >> " + evenement.getArgument();
+                    envoyerATousSauf(message,  cnx.getAlias());
+                    serveur.ajouterHistorique(message);
                     break;
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();

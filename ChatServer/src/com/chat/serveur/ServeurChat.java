@@ -3,6 +3,7 @@ package com.chat.serveur;
 import com.chat.commun.net.Connexion;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Cette classe étend (hérite) la classe abstraite Serveur et y ajoute le nécessaire pour que le
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  * @since 2023-09-15
  */
 public class ServeurChat extends Serveur {
-
+    private Vector<String> historiqueMessages = new Vector<>();
     /**
      * Crée un serveur de chat qui va écouter sur le port spécifié.
      *
@@ -89,11 +90,21 @@ public class ServeurChat extends Serveur {
      * Retourne la liste des messages de l'historique de chat dans une chaîne
      * de caractères.
      *
-     * @return String chaîne de caractères contenant la liste des alias des membres connectés sous la
+     * @return String chaîne de caractères contenant la liste des messages envoyés par les membres connectés sous la
      * forme message1\nmessage2\nmessage3 ...
      */
     public String historique() {
         String s = "";
+        if(!historiqueMessages.isEmpty()) s = String.join("\n", historiqueMessages);
         return s;
+    }
+
+    /**
+     * Méthode qui ajoute un message à l'historique de messages
+     *
+     * @param String msg string du message sous forme : alias >> message
+     */
+    public void ajouterHistorique(String msg) {
+        historiqueMessages.add(msg);
     }
 }
