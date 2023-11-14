@@ -10,4 +10,28 @@ package com.chat.client;
  */
 public class ClientChat extends Client {
     //Cette classe est pour le moment vide et sera compléter dans le TP.
+
+    private EtatPartieEchecs etatPartie;
+
+    // Getter
+    public EtatPartieEchecs getEtatPartie() {
+        return etatPartie;
+    }
+
+    // Setter
+    public void setEtatPartie(EtatPartieEchecs etatPartie) {
+        this.etatPartie = etatPartie;
+    }
+
+    // Méthode appelée pour mettre à jour l'état de la partie après un déplacement validé par le serveur
+    public void mettreAJourEtatPartie(char[][] nouvelEtat) {
+        etatPartie.setEtatEchiquier(nouvelEtat);
+    }
+
+    public void nouvellePartie() {
+        etatPartie = new EtatPartieEchecs();
+    }
+
+
 }
+

@@ -5,10 +5,10 @@ import com.chat.commun.evenement.GestionnaireEvenement;
 import com.chat.commun.net.Connexion;
 
 /**
- * Cette classe représente un gestionnaire d'événement d'un serveur. Lorsqu'un serveur reçoit un texte d'un client,
- * il crée un événement à partir du texte reçu et alerte ce gestionnaire qui réagit en gérant l'événement.
+ * Cette classe reprï¿½sente un gestionnaire d'ï¿½vï¿½nement d'un serveur. Lorsqu'un serveur reï¿½oit un texte d'un client,
+ * il crï¿½e un ï¿½vï¿½nement ï¿½ partir du texte reï¿½u et alerte ce gestionnaire qui rï¿½agit en gï¿½rant l'ï¿½vï¿½nement.
  *
- * @author Abdelmoumène Toudeft (Abdelmoumene.Toudeft@etsmtl.ca)
+ * @author Abdelmoumï¿½ne Toudeft (Abdelmoumene.Toudeft@etsmtl.ca)
  * @version 1.0
  * @since 2023-09-01
  */
@@ -16,19 +16,19 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     private Serveur serveur;
 
     /**
-     * Construit un gestionnaire d'événements pour un serveur.
+     * Construit un gestionnaire d'ï¿½vï¿½nements pour un serveur.
      *
-     * @param serveur Serveur Le serveur pour lequel ce gestionnaire gère des événements
+     * @param serveur Serveur Le serveur pour lequel ce gestionnaire gï¿½re des ï¿½vï¿½nements
      */
     public GestionnaireEvenementServeur(Serveur serveur) {
         this.serveur = serveur;
     }
 
     /**
-     * Méthode qui envoie un message reçu par le serveur à tout les utilisateurs connectés.
+     * Mï¿½thode qui envoie un message reï¿½u par le serveur ï¿½ tout les utilisateurs connectï¿½s.
      *
      * @param str le message.
-     * @param aliasExpediteur l'alias de l'expéditeur du message
+     * @param aliasExpediteur l'alias de l'expï¿½diteur du message
      */
     public void envoyerATousSauf(String str, String aliasExpediteur) {
         for (Connexion connexion:serveur.connectes) {
@@ -38,9 +38,9 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     }
 
     /**
-     * Méthode de gestion d'événements. Cette méthode contiendra le code qui gère les réponses obtenues d'un client.
+     * Mï¿½thode de gestion d'ï¿½vï¿½nements. Cette mï¿½thode contiendra le code qui gï¿½re les rï¿½ponses obtenues d'un client.
      *
-     * @param evenement L'événement à gérer.
+     * @param evenement L'ï¿½vï¿½nement ï¿½ gï¿½rer.
      */
     @Override
     public void traiter(Evenement evenement) {
@@ -54,25 +54,87 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
             System.out.println("SERVEUR-Recu : " + evenement.getType() + " " + evenement.getArgument());
             typeEvenement = evenement.getType();
             switch (typeEvenement) {
-                case "EXIT": //Ferme la connexion avec le client qui a envoyé "EXIT":
+                case "EXIT": //Ferme la connexion avec le client qui a envoyï¿½ "EXIT":
                     cnx.envoyer("END");
                     serveur.enlever(cnx);
                     cnx.close();
                     break;
-                case "LIST": //Envoie la liste des alias des personnes connectées :
+                case "LIST": //Envoie la liste des alias des personnes connectï¿½es :
                     cnx.envoyer("LIST " + serveur.list());
                     break;
 
-                //Ajoutez ici d’autres case pour gérer d’autres commandes.
-                case "MSG": //Envoie un message d'un utilisateur à tout le monde sauf lui :
+                //Ajoutez ici dï¿½autres case pour gï¿½rer dï¿½autres commandes.
+                case "MSG": //Envoie un message d'un utilisateur ï¿½ tout le monde sauf lui :
                     String message = cnx.getAlias() + " >> " + evenement.getArgument();
                     envoyerATousSauf(message,  cnx.getAlias());
                     serveur.ajouterHistorique(message);
                     break;
+
+                case "INVITE":
+                    String alias1 = cnx.getAlias();
+                    String alias2 = evenement.getArgument();
+                    creerInvitation(alias1, alias2);
+                    break;
+
+                case "JOIN":
+                    String alias1Join = cnx.getAlias();
+                    String alias2Join = evenement.getArgument();
+                    gererCommandeJoin(alias1Join, alias2Join);
+                    break;
+
+                case "DECLINE":
+                    String alias1Decline = cnx.getAlias();
+                    String alias2Decline = evenement.getArgument();
+                    supprimerInvitation(alias1Decline, alias2Decline);
+                    informerUtilisateur(alias2Decline, alias1Decline + " a refusÃ© votre invitation.");
+                    break;
+
+                case "INV":
+                    String aliasInv = cnx.getAlias();
+                    envoyerListeInvitations(aliasInv);
+                    break;
+
+                case "PRV":
+                    String[] arguments = evenement.getArgument().split(" ", 2);
+                    String aliasPrv = arguments[0];
+                    String messagePrv = arguments.length > 1 ? arguments[1] : "";
+                    envoyerMessagePrive(cnx.getAlias(), aliasPrv, messagePrv);
+                    break;
+
+                case "QUIT":
+                    String aliasQuit = cnx.getAlias();
+                    String alias2Quit = evenement.getArgument();
+                    quitterSalonPrive(aliasQuit, alias2Quit);
+                    break;
+
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
                     cnx.envoyer(msg);
             }
         }
     }
+
+    private void creerInvitation(String alias1, String alias2) {
+    }
+
+    private void informerUtilisateur(String alias2Decline, String s) {
+    }
+
+
+    private void gererCommandeJoin(String alias1, String alias2) {
+    }
+
+    private void supprimerInvitation(String alias1, String alias2) {
+    }
+
+    private void envoyerListeInvitations(String alias) {
+    }
+    private void envoyerMessagePrive(String alias1, String alias2, String message) {
+
+    }
+    private void quitterSalonPrive(String alias1, String alias2) {
+
+    }
 }
+
+
