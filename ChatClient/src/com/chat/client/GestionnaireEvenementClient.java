@@ -35,6 +35,7 @@ public class GestionnaireEvenementClient implements GestionnaireEvenement {
         String typeEvenement, arg;
         String[] membres;
         String[] messages;
+        String[] invitations;
 
         if (source instanceof Connexion) {
             cnx = (Connexion) source;
@@ -45,15 +46,25 @@ public class GestionnaireEvenementClient implements GestionnaireEvenement {
                     break;
                 case "LIST" : //Le serveur a renvoyé la liste des connectés
                     arg = evenement.getArgument();
-                    membres = arg.split("");
+                    membres = arg.split(":");
                     System.out.println("\t\t"+membres.length+" personnes dans le salon :");
                     for (String s:membres)
-                        System.out.println("\t\t\t- "+s);
+                        System.out.println("\t\t\t- "+ s);
                     break;
                 case "HIST" : //Le serveur a renvoyé l'historique des messages
                     messages = evenement.getArgument().split("\n");
                     for (String msg:messages)
                         System.out.println("\t\t\t." + msg);
+                    break;
+                case "LIST_INV" : //Le serveur a renvoyé les invitations en cours
+                    arg = evenement.getArgument();
+                    invitations = arg.split(":");
+                    if(invitations[0].equals("AUCUNE INVITATION")) System.out.println("\t\t" + invitations[0]);
+                    else{
+                        System.out.println("\t\t"+invitations.length+" invitation(s) actives :");
+                        for (String hote:invitations)
+                            System.out.println("\t\t\t- "+ hote);
+                    }
                     break;
                 default: //Afficher le texte recu :
                     System.out.println("\t\t\t."+evenement.getType()+" "+evenement.getArgument());
