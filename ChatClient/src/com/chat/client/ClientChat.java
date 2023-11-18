@@ -9,8 +9,6 @@ package com.chat.client;
  * @since 2023-09-01
  */
 public class ClientChat extends Client {
-    //Cette classe est pour le moment vide et sera compléter dans le TP.
-
     private EtatPartieEchecs etatPartie;
 
     // Getter

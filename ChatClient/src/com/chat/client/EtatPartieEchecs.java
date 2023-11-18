@@ -40,13 +40,14 @@ public class EtatPartieEchecs {
     public String toString() {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < 8; i++) {
+            result.append(8 - i).append(" ");
             for (int j = 0; j < 8; j++) {
                 result.append(etatEchiquier[i][j]).append(" ");
             }
-            result.append("\n");
+            result.append(8 - i).append("\n");
         }
+        result.append("  a b c d e f g h\n");
         return result.toString();
     }
-
 }
 

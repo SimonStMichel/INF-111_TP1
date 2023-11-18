@@ -3,6 +3,17 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/com/chat/programme/Main.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/src/com/chat/serveur/Serveur.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/echecs/PartieEchecs.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/Position.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Cavalier.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Dame.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Fou.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Piece.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Pion.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Roi.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/pieces/Tour.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/programme/Main.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/echecs/util/EchecsUtil.java" charset="UTF-8" />
     <file url="PROJECT" charset="windows-1252" />
   </component>
 </project>
