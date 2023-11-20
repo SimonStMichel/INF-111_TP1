@@ -1,4 +1,4 @@
-package echecs.pieces;
+package com.echecs.pieces;
 
 import com.echecs.Position;
 
@@ -21,13 +21,4 @@ public abstract class Piece {
      * @return boolean true, si la pièce peut se déplacer de la position pos1 à la position pos2, false sinon
      */
     public abstract boolean peutSeDeplacer(Position pos1, Position pos2, Piece echiquier[][]);
-
-    public boolean peutSeDeplacer(echecs.Position initiale, echecs.Position finale, Piece[][] echiquier) {
-        return true;
-    }
-
-
-    public boolean peutSeDeplacer(Position positionPiece, echecs.Position positionRoi, Piece[][] echiquier) {
-        return true;
-    }
 }

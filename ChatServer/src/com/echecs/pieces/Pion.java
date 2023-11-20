@@ -1,4 +1,4 @@
-package echecs.pieces;
+package com.echecs.pieces;
 
 import com.echecs.Position;
 

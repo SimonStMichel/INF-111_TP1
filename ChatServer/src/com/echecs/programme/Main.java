@@ -1,4 +1,4 @@
-package echecs.programme;
+package com.echecs.programme;
 
 import com.echecs.util.EchecsUtil;
 /**

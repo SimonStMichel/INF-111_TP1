@@ -1,9 +1,9 @@
-package echecs.pieces;
+package com.echecs.pieces;
 
 import com.echecs.Position;
 
-public class Roi extends Piece {
-    public Roi(char couleur) {
+public class Tour extends Piece {
+    public Tour(char couleur) {
         super(couleur);
     }
 

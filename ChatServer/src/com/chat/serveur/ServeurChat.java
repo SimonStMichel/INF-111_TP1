@@ -2,6 +2,7 @@ package com.chat.serveur;
 
 import com.chat.commun.net.Connexion;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -15,6 +16,10 @@ import java.util.Vector;
  */
 public class ServeurChat extends Serveur {
     private Vector<String> historiqueMessages = new Vector<>();
+    private Vector<Invitation> historiqueInvitations = new Vector<>();
+    private Vector<SalonPrive> salonPrivesActifs = new Vector<>();
+    private Vector<Invitation> historiqueInvitationsParties = new Vector<>();
+
     /**
      * Crée un serveur de chat qui va écouter sur le port spécifié.
      *
@@ -86,6 +91,29 @@ public class ServeurChat extends Serveur {
             s+=cnx.getAlias()+":";
         return s;
     }
+
+    /**
+     * Retourne la liste des invitations envoyés à un utilisateur
+     *
+     * @param utilisateur Connexion Référence à l'utilisateur qui demande la liste d'invitations
+     *
+     * @return String chaîne de caractères contenant la liste invitations envoyés à un utilisateur
+     */
+    public String listInvitations(Connexion utilisateur) {
+        Vector<String> invitations = new Vector<String>();
+        String s = "";
+
+        for (Invitation inv:historiqueInvitations) {
+            if(inv.getAliasInvite().equals(utilisateur.getAlias())) invitations.add(inv.getAliasHote());
+        }
+
+        if(invitations.isEmpty()) s += "AUCUNE INVITATION:";
+        else {
+           for (String inv:invitations)
+                s += inv + ":";
+        }
+        return s;
+    }
     /**
      * Retourne la liste des messages de l'historique de chat dans une chaîne
      * de caractères.
@@ -107,4 +135,80 @@ public class ServeurChat extends Serveur {
     public void ajouterHistorique(String msg) {
         historiqueMessages.add(msg);
     }
+
+    /**
+     * Méthode qui ajoute une invitation à l'historique des invitations
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public void ajouterInvitation(Invitation invitation) {
+        historiqueInvitations.add(invitation);
+    }
+
+    /**
+     * Méthode qui supprime une invitation de l'historique des invitations
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public void supprimerInvitation(Invitation invitation) {
+        historiqueInvitations.remove(invitation);
+    }
+
+    /**
+     * Méthode qui ajoute un salon à la liste des salons actifs
+     *
+     * @param SalonPrive salon Objet de type SalonPrive
+     */
+    public void ajouterSalon(SalonPrive salon) {
+        salonPrivesActifs.add(salon);
+    }
+
+    /**
+     * Méthode qui retourne true si l'invitation existe
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public boolean invitationExiste(Invitation invitation) {
+        for (Invitation inv : historiqueInvitations) {
+            if(inv.getAliasInvite().equals(invitation.getAliasInvite())  && inv.getAliasHote().equals(invitation.getAliasHote())) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Méthode qui retourne true si un salon existe
+     *
+     * @param SalonPrive salon Objet de type invitation
+     */
+    public boolean salonExiste(SalonPrive salon) {
+        for (SalonPrive sal : salonPrivesActifs) {
+            if(sal.getAliasInvite().equals(salon.getAliasInvite())  && sal.getAliasHote().equals(salon.getAliasHote())) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Méthode qui retourne true si une invitation de partie existe
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public boolean invitationPartieExiste(Invitation invitation) {
+        for (Invitation inv : historiqueInvitationsParties) {
+            if(inv.getAliasInvite().equals(invitation.getAliasInvite())  && inv.getAliasHote().equals(invitation.getAliasHote())) return true;
+        }
+        return false;
+    }
+    /**
+     * Méthode qui supprime une invitation de partie de  l'historique des invitations des parties
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public void supprimerInvitationPartie(Invitation invitation) {
+        historiqueInvitationsParties.remove(invitation);
+    }
+
+    public void supprimerSalon(SalonPrive salon) {
+        salonPrivesActifs.remove(salon);
+    }
+
 }

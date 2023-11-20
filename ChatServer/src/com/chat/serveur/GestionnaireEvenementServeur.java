@@ -3,6 +3,9 @@ package com.chat.serveur;
 import com.chat.commun.evenement.Evenement;
 import com.chat.commun.evenement.GestionnaireEvenement;
 import com.chat.commun.net.Connexion;
+import com.echecs.PartieEchecs;
+
+import java.util.Vector;
 
 /**
  * Cette classe repr�sente un gestionnaire d'�v�nement d'un serveur. Lorsqu'un serveur re�oit un texte d'un client,
@@ -46,7 +49,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     public void traiter(Evenement evenement) {
         Object source = evenement.getSource();
         Connexion cnx;
-        String msg, typeEvenement, aliasExpediteur;
+        String msg, typeEvenement;
         ServeurChat serveur = (ServeurChat) this.serveur;
 
         if (source instanceof Connexion) {
@@ -63,71 +66,130 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     cnx.envoyer("LIST " + serveur.list());
                     break;
 
-                //Ajoutez ici d�autres case pour g�rer d�autres commandes.
-                case "MSG": //Envoie un message d'un utilisateur � tout le monde sauf lui :
+                //Ajoutez ici d'autres case pour gérer d'autres commandes.
+                case "MSG": //Envoie un message d'un utilisateur à tout le monde sauf lui :
                     String message = cnx.getAlias() + " >> " + evenement.getArgument();
                     envoyerATousSauf(message,  cnx.getAlias());
                     serveur.ajouterHistorique(message);
                     break;
 
-                case "INVITE":
-                    String alias1 = cnx.getAlias();
-                    String alias2 = evenement.getArgument();
-                    creerInvitation(alias1, alias2);
-                    break;
-
                 case "JOIN":
-                    String alias1Join = cnx.getAlias();
-                    String alias2Join = evenement.getArgument();
-                    gererCommandeJoin(alias1Join, alias2Join);
+                    Invitation invitation = new Invitation(cnx.getAlias(), evenement.getArgument());
+                    Invitation invitationInverse = new Invitation(evenement.getArgument(), cnx.getAlias());
+
+                    SalonPrive salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    SalonPrive salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+
+                    // Si l'invitation ou le salon existe déjà
+                    if(serveur.invitationExiste(invitation) || serveur.salonExiste(salon) || serveur.salonExiste(salonInverse)) cnx.envoyer("ERREUR");
+                    // Si l'invitation est accepté
+                    else if (serveur.invitationExiste(invitationInverse)) {
+                            serveur.ajouterSalon(salon);
+                            serveur.supprimerInvitation(invitation);
+                            cnx.envoyer("NOUVEAU SALON AVEC " + salon.getAliasInvite());
+                            for (Connexion connexion : serveur.connectes) {
+                                if (connexion.getAlias().equals(salon.getAliasInvite())) {
+                                    connexion.envoyer("NOUVEAU SALON AVEC " + salon.getAliasHote());
+                                }
+                            }
+                    }
+                    // Création d'une invitation
+                    else {
+                        serveur.ajouterInvitation(invitation);
+                        for (Connexion connexion:serveur.connectes) {
+                            if(connexion.getAlias().equals(evenement.getArgument())) connexion.envoyer(cnx.getAlias() + " VOUS A ENVOYÉ UNE INVITATION");
+                        }
+                    }
                     break;
 
                 case "DECLINE":
-                    String alias1Decline = cnx.getAlias();
-                    String alias2Decline = evenement.getArgument();
-                    supprimerInvitation(alias1Decline, alias2Decline);
-                    informerUtilisateur(alias2Decline, alias1Decline + " a refusé votre invitation.");
+                    invitation = new Invitation(evenement.getArgument(), cnx.getAlias());
+                    invitationInverse = new Invitation(cnx.getAlias(), evenement.getArgument());
+                    // Si l'invitation n'existe pas
+                    if (!serveur.invitationExiste(invitation) || !serveur.invitationExiste(invitationInverse)) cnx.envoyer("L'INVITATION N'EXISTE PAS");
+                    // Sinon
+                    else{
+                        cnx.envoyer("L'invitation a été décliné");
+                        for (Connexion connexion:serveur.connectes) {
+                            if(connexion.getAlias().equals(evenement.getArgument())) connexion.envoyer(invitation.getAliasInvite() + " A DÉCLINÉ VOTRE INVITATION");
+                        }
+                        serveur.supprimerInvitation(invitation);
+                    }
                     break;
 
                 case "INV":
-                    String aliasInv = cnx.getAlias();
-                    envoyerListeInvitations(aliasInv);
+                    cnx.envoyer("LIST_INV " + serveur.listInvitations(cnx));
                     break;
 
                 case "PRV":
-                    String[] arguments = evenement.getArgument().split(" ", 2);
-                    String aliasPrv = arguments[0];
-                    String messagePrv = arguments.length > 1 ? arguments[1] : "";
-                    envoyerMessagePrive(cnx.getAlias(), aliasPrv, messagePrv);
+                    salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+                    if(serveur.salonExiste(salon) || serveur.salonExiste(salonInverse)) {
+                        String[] arguments = evenement.getArgument().split(" ", 2);
+                        for (Connexion connexion:serveur.connectes) {
+                            if(connexion.getAlias().equals(arguments[0])) connexion.envoyer("PRV " + cnx.getAlias() + " >> " + arguments[1]);
+                        }
+                    } else cnx.envoyer("LE SERVEUR N'EXISTE PAS");
                     break;
 
                 case "QUIT":
-                    String aliasQuit = cnx.getAlias();
-                    String alias2Quit = evenement.getArgument();
-                    quitterSalonPrive(aliasQuit, alias2Quit);
+                    salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+
+                    if(serveur.salonExiste(salon) || serveur.salonExiste(salonInverse)) {
+                        // Indiquer que le salon est fermé aux membres
+                        cnx.envoyer("FERMETURE DU SALON PRIVÉE AVEC " + evenement.getArgument());
+
+                        for (Connexion connexion:serveur.connectes) {
+                            if(connexion.getAlias().equals(evenement.getArgument())) connexion.envoyer(cnx.getAlias() + " A FERMÉ LE SALON PRIVÉ");
+                        }
+                        // Suppression du salon
+                        if(cnx.getAlias().equals(salon.getAliasHote())) serveur.supprimerSalon(salon);
+                        else serveur.supprimerSalon(salonInverse);
+                    }
+                    else cnx.envoyer("LE SALON N'EXISTE PAS");
                     break;
 
-                default: //Renvoyer le texte recu convertit en majuscules :
+                case "CHESS":
+                    salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+
+                    Invitation partie = new Invitation(cnx.getAlias(), evenement.getArgument());
+                    Invitation partieInverse = new Invitation(evenement.getArgument(), cnx.getAlias());
+
+                    // Si le salon n'existe pas
+                    if(!serveur.salonExiste(salon) && !serveur.salonExiste(salonInverse)){
+                        cnx.envoyer("LE SALON N'EXISTE PAS AVEC " + evenement.getArgument());
+                        return;
+                    }
+                    // Si l'invitation partie existe
+                    else if(serveur.invitationPartieExiste(partie) || serveur.invitationPartieExiste(partieInverse)) {
+                        // Si l'hote de l'invitation rfait une demande
+                        if(cnx.getAlias().equals(partie.getAliasHote())) cnx.envoyer("DEMANDE DÉJÀ ENVOYÉ");
+                        // Si l'autre utilisateur accepte
+                        else {
+                            PartieEchecs nouvellePartie = new PartieEchecs();
+                            nouvellePartie.setAliasJoueur1(partie.getAliasHote());
+                            nouvellePartie.setAliasJoueur2(partie.getAliasInvite());
+
+                            cnx.envoyer("CHESSOK " + nouvellePartie.getCouleurJoueur1());
+                            for (Connexion connexion:serveur.connectes) {
+                                if(connexion.getAlias().equals(partie.getAliasHote())) {
+                                    connexion.envoyer("CHESSOK " + nouvellePartie.getCouleurJoueur2());
+                                }
+                            }
+                            salon.setPartieEchecs(nouvellePartie);
+                            serveur.supprimerInvitation(partie);
+                        }
+                    }
+                    // Sinon on créé une nouvelle invitation
+                    break;
+
+                default: // Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
                     cnx.envoyer(msg);
             }
         }
-    }
-
-    private void creerInvitation(String alias1, String alias2) {
-    }
-
-    private void informerUtilisateur(String alias2Decline, String s) {
-    }
-
-
-    private void gererCommandeJoin(String alias1, String alias2) {
-    }
-
-    private void supprimerInvitation(String alias1, String alias2) {
-    }
-
-    private void envoyerListeInvitations(String alias) {
     }
     private void envoyerMessagePrive(String alias1, String alias2, String message) {
 

@@ -1,9 +1,9 @@
-package echecs.pieces;
+package com.echecs.pieces;
 
 import com.echecs.Position;
 
-public class Fou extends Piece {
-    public Fou(char couleur) {
+public class Cavalier extends Piece {
+    public Cavalier(char couleur) {
         super(couleur);
     }
 
