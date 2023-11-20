@@ -13,7 +13,7 @@ import com.chat.commun.net.Connexion;
  * @since 2023-09-01
  */
 public class GestionnaireEvenementClient implements GestionnaireEvenement {
-    private Client client;
+    private ClientChat client;
 
     /**
      * Construit un gestionnaire d'événements pour un client.
@@ -21,7 +21,7 @@ public class GestionnaireEvenementClient implements GestionnaireEvenement {
      * @param client Client Le client pour lequel ce gestionnaire gère des événements
      */
     public GestionnaireEvenementClient(Client client) {
-        this.client = client;
+        this.client = (ClientChat) client;
     }
     /**
      * Méthode de gestion d'événements. Cette méthode contiendra le code qui gère les réponses obtenues d'un serveur.
@@ -65,6 +65,9 @@ public class GestionnaireEvenementClient implements GestionnaireEvenement {
                         for (String hote:invitations)
                             System.out.println("\t\t\t- "+ hote);
                     }
+                    break;
+                case "CHESSOK" : //Le serveur a renvoyé les invitations en cours
+                    client.nouvellePartie();
                     break;
                 default: //Afficher le texte recu :
                     System.out.println("\t\t\t."+evenement.getType()+" "+evenement.getArgument());

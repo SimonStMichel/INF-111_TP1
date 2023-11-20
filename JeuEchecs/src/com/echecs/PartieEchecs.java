@@ -23,7 +23,7 @@ public class PartieEchecs {
     /**
      * La couleur de celui à qui c'est le tour de jouer (n ou b).
      */
-    private char tour = 'b'; //Les blancs commencent toujours
+    private char tour = 'b'; // Les blancs commencent toujours
     /**
      * Crée un échiquier de jeu d'échecs avec les pièces dans leurs positions
      * initiales de début de partie.
@@ -32,33 +32,31 @@ public class PartieEchecs {
 
     private void initialiserEchiquier() {
         // Placement des pièces pour les Blancs
-        echiquier[0][0] = new Tour('b');
-        echiquier[0][1] = new Cavalier('b');
-        echiquier[0][2] = new Fou('b');
-        echiquier[0][3] = new Dame('b');
-        echiquier[0][4] = new Roi('b');
-        echiquier[0][5] = new Fou('b');
-        echiquier[0][6] = new Cavalier('b');
-        echiquier[0][7] = new Tour('b');
-
-        for (int i = 0; i < 8; i++) {
-            echiquier[1][i] = new Pion('b');
-        }
-
+        instancierPieces('b');
         // Les pièces pour les Noirs sont placées symétriquement
-        echiquier[7][0] = new Tour('n');
-        echiquier[7][1] = new Cavalier('n');
-        echiquier[7][2] = new Fou('n');
-        echiquier[7][3] = new Dame('n');
-        echiquier[7][4] = new Roi('n');
-        echiquier[7][5] = new Fou('n');
-        echiquier[7][6] = new Cavalier('n');
-        echiquier[7][7] = new Tour('n');
+        instancierPieces('n');
+    }
+
+    /**
+     * Méthode qui place les pièces sur l'échiquier selon la couleur passé en paramètre
+     *
+     * @param couleur char le caractère qui représente la couleur
+     * */
+    private void instancierPieces(char couleur){
+        echiquier[couleur == 'n' ? 7 : 0][0] = new Tour(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][1] = new Cavalier(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][2] = new Fou(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][3] = new Dame(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][4] = new Roi(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][5] = new Fou(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][6] = new Cavalier(couleur);
+        echiquier[couleur == 'n' ? 7 : 0][7] = new Tour(couleur);
 
         for (int i = 0; i < 8; i++) {
-            echiquier[6][i] = new Pion('n');
+            echiquier[couleur == 'n' ? 6 : 1][i] = new Pion(couleur);
         }
     }
+
     public PartieEchecs() {
         echiquier = new Piece[8][8];
         // Initialiser la matrice
@@ -77,10 +75,7 @@ public class PartieEchecs {
      * Change la main du jeu (de n à b ou de b à n).
      */
     public void changerTour() {
-        if (tour=='b')
-            tour = 'n';
-        else
-            tour = 'b';
+        tour = tour == 'b' ? 'n' : 'b';
     }
     /**
      * Tente de déplacer une pièce d'une position à une autre sur l'échiquier.
@@ -97,29 +92,19 @@ public class PartieEchecs {
      * @return boolean true, si le déplacement a été effectué avec succès, false sinon
      */
     public boolean deplace(Position initiale, Position finale) {
-        // throw new NotImplementedException();
-        if (!estPositionValide(initiale) || !estPositionValide(finale)) {
-            return false;
-    }
+        if (!estPositionValide(initiale) || !estPositionValide(finale)) return false;
 
         // Récupérer la pièce à la position initiale
         Piece pieceADeplacer = echiquier[initiale.getLigne()][initiale.getColonne()];
 
         // Vérifier s'il y a une pièce à déplacer à la position initiale
-        if (pieceADeplacer == null) {
-            return false;
-        }
+        if (pieceADeplacer == null) return false;
 
         // Vérifier si la couleur de la pièce correspond à la couleur du joueur qui a la main
-        if (pieceADeplacer.getCouleur() != tour) {
-            return false;
-        }
+        if (pieceADeplacer.getCouleur() != tour) return false;
 
         // Vérifier s'il n'y a pas à la position finale une pièce de même couleur que la pièce à déplacer
-        if (echiquier[finale.getLigne()][finale.getColonne()] != null &&
-                echiquier[finale.getLigne()][finale.getColonne()].getCouleur() == pieceADeplacer.getCouleur()) {
-            return false;
-        }
+        if (echiquier[finale.getLigne()][finale.getColonne()] != null && echiquier[finale.getLigne()][finale.getColonne()].getCouleur() == pieceADeplacer.getCouleur()) return false;
 
         // Vérifier les conditions pour le roque
         if (pieceADeplacer instanceof Roi) {
@@ -162,7 +147,6 @@ public class PartieEchecs {
      * si le roi blanc est en échec, tout autre caractère, sinon.
      */
     public char estEnEchec() {
-            //throw new NotImplementedException();
         Position positionRoi = trouvePositionRoi();
 
         for (int i = 0; i < 8; i++) {
@@ -175,8 +159,7 @@ public class PartieEchecs {
                 }
             }
         }
-
-
+        
         return ' ';
     }
     private Position trouvePositionRoi() {

@@ -3,6 +3,7 @@ package com.chat.serveur;
 import com.chat.commun.evenement.Evenement;
 import com.chat.commun.evenement.GestionnaireEvenement;
 import com.chat.commun.net.Connexion;
+import com.echecs.PartieEchecs;
 
 import java.util.Vector;
 
@@ -48,7 +49,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     public void traiter(Evenement evenement) {
         Object source = evenement.getSource();
         Connexion cnx;
-        String msg, typeEvenement, aliasExpediteur;
+        String msg, typeEvenement;
         ServeurChat serveur = (ServeurChat) this.serveur;
 
         if (source instanceof Connexion) {
@@ -121,19 +122,70 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     break;
 
                 case "PRV":
-                    String[] arguments = evenement.getArgument().split(" ", 2);
-                    String aliasPrv = arguments[0];
-                    String messagePrv = arguments.length > 1 ? arguments[1] : "";
-                    envoyerMessagePrive(cnx.getAlias(), aliasPrv, messagePrv);
+                    salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+                    if(serveur.salonExiste(salon) || serveur.salonExiste(salonInverse)) {
+                        String[] arguments = evenement.getArgument().split(" ", 2);
+                        for (Connexion connexion:serveur.connectes) {
+                            if(connexion.getAlias().equals(arguments[0])) connexion.envoyer("PRV " + cnx.getAlias() + " >> " + arguments[1]);
+                        }
+                    } else cnx.envoyer("LE SERVEUR N'EXISTE PAS");
                     break;
 
                 case "QUIT":
-                    String aliasQuit = cnx.getAlias();
-                    String alias2Quit = evenement.getArgument();
-                    quitterSalonPrive(aliasQuit, alias2Quit);
+                    salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+
+                    if(serveur.salonExiste(salon) || serveur.salonExiste(salonInverse)) {
+                        // Indiquer que le salon est fermé aux membres
+                        cnx.envoyer("FERMETURE DU SALON PRIVÉE AVEC " + evenement.getArgument());
+
+                        for (Connexion connexion:serveur.connectes) {
+                            if(connexion.getAlias().equals(evenement.getArgument())) connexion.envoyer(cnx.getAlias() + " A FERMÉ LE SALON PRIVÉ");
+                        }
+                        // Suppression du salon
+                        if(cnx.getAlias().equals(salon.getAliasHote())) serveur.supprimerSalon(salon);
+                        else serveur.supprimerSalon(salonInverse);
+                    }
+                    else cnx.envoyer("LE SALON N'EXISTE PAS");
                     break;
 
-                default: //Renvoyer le texte recu convertit en majuscules :
+                case "CHESS":
+                    salon = new SalonPrive(cnx.getAlias(), evenement.getArgument());
+                    salonInverse = new SalonPrive(evenement.getArgument(), cnx.getAlias());
+
+                    Invitation partie = new Invitation(cnx.getAlias(), evenement.getArgument());
+                    Invitation partieInverse = new Invitation(evenement.getArgument(), cnx.getAlias());
+
+                    // Si le salon n'existe pas
+                    if(!serveur.salonExiste(salon) && !serveur.salonExiste(salonInverse)){
+                        cnx.envoyer("LE SALON N'EXISTE PAS AVEC " + evenement.getArgument());
+                        return;
+                    }
+                    // Si l'invitation partie existe
+                    else if(serveur.invitationPartieExiste(partie) || serveur.invitationPartieExiste(partieInverse)) {
+                        // Si l'hote de l'invitation rfait une demande
+                        if(cnx.getAlias().equals(partie.getAliasHote())) cnx.envoyer("DEMANDE DÉJÀ ENVOYÉ");
+                        // Si l'autre utilisateur accepte
+                        else {
+                            PartieEchecs nouvellePartie = new PartieEchecs();
+                            nouvellePartie.setAliasJoueur1(partie.getAliasHote());
+                            nouvellePartie.setAliasJoueur2(partie.getAliasInvite());
+
+                            cnx.envoyer("CHESSOK " + nouvellePartie.getCouleurJoueur1());
+                            for (Connexion connexion:serveur.connectes) {
+                                if(connexion.getAlias().equals(partie.getAliasHote())) {
+                                    connexion.envoyer("CHESSOK " + nouvellePartie.getCouleurJoueur2());
+                                }
+                            }
+                            salon.setPartieEchecs(nouvellePartie);
+                            serveur.supprimerInvitation(partie);
+                        }
+                    }
+                    // Sinon on créé une nouvelle invitation
+                    break;
+
+                default: // Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
                     cnx.envoyer(msg);
             }

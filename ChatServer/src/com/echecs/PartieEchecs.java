@@ -30,6 +30,59 @@ public class PartieEchecs {
      * Répartit au hasard les couleurs n et b entre les 2 joueurs.
      */
 
+    /**
+     * Retourne la couleur n ou b du joueur qui a la main.
+     *
+     * @return char la couleur du joueur à qui c'est le tour de jouer.
+     */
+    public char getTour() {
+        return tour;
+    }
+    /**
+     * Retourne l'alias du premier joueur.
+     * @return String alias du premier joueur.
+     */
+    public String getAliasJoueur1() {
+        return aliasJoueur1;
+    }
+    /**
+     * Modifie l'alias du premier joueur.
+     * @param aliasJoueur1 String nouvel alias du premier joueur.
+     */
+    public void setAliasJoueur1(String aliasJoueur1) {
+        this.aliasJoueur1 = aliasJoueur1;
+    }
+    /**
+     * Retourne l'alias du deuxième joueur.
+     * @return String alias du deuxième joueur.
+     */
+    public String getAliasJoueur2() {
+        return aliasJoueur2;
+    }
+    /**
+     * Modifie l'alias du deuxième joueur.
+     * @param aliasJoueur2 String nouvel alias du deuxième joueur.
+     */
+    public void setAliasJoueur2(String aliasJoueur2) {
+        this.aliasJoueur2 = aliasJoueur2;
+    }
+    /**
+     * Retourne la couleur n ou b du premier joueur.
+     * @return char couleur du premier joueur.
+     */
+    public char getCouleurJoueur1() {
+        return couleurJoueur1;
+    }
+
+
+    /**
+     * Retourne la couleur n ou b du deuxième joueur.
+     * @return char couleur du deuxième joueur.
+     */
+    public char getCouleurJoueur2() {
+        return couleurJoueur2;
+    }
+
     private void initialiserEchiquier() {
         // Placement des pièces pour les Blancs
         echiquier[0][0] = new Tour('b');
@@ -67,7 +120,7 @@ public class PartieEchecs {
                 echiquier[i][j] = null; // Ou une autre valeur par défaut selon votre logique
             }
         }
-        //Placement des pièces :
+        // Placement des pièces :
         initialiserEchiquier();
     }
 
@@ -77,10 +130,7 @@ public class PartieEchecs {
      * Change la main du jeu (de n à b ou de b à n).
      */
     public void changerTour() {
-        if (tour=='b')
-            tour = 'n';
-        else
-            tour = 'b';
+        tour = tour == 'b' ? 'n' : 'b';
     }
     /**
      * Tente de déplacer une pièce d'une position à une autre sur l'échiquier.
@@ -189,57 +239,5 @@ public class PartieEchecs {
         }
 
         return new Position((char) -1, (byte) -1);
-    }
-    /**
-     * Retourne la couleur n ou b du joueur qui a la main.
-     *
-     * @return char la couleur du joueur à qui c'est le tour de jouer.
-     */
-    public char getTour() {
-        return tour;
-    }
-    /**
-     * Retourne l'alias du premier joueur.
-     * @return String alias du premier joueur.
-     */
-    public String getAliasJoueur1() {
-        return aliasJoueur1;
-    }
-    /**
-     * Modifie l'alias du premier joueur.
-     * @param aliasJoueur1 String nouvel alias du premier joueur.
-     */
-    public void setAliasJoueur1(String aliasJoueur1) {
-        this.aliasJoueur1 = aliasJoueur1;
-    }
-    /**
-     * Retourne l'alias du deuxième joueur.
-     * @return String alias du deuxième joueur.
-     */
-    public String getAliasJoueur2() {
-        return aliasJoueur2;
-    }
-    /**
-     * Modifie l'alias du deuxième joueur.
-     * @param aliasJoueur2 String nouvel alias du deuxième joueur.
-     */
-    public void setAliasJoueur2(String aliasJoueur2) {
-        this.aliasJoueur2 = aliasJoueur2;
-    }
-    /**
-     * Retourne la couleur n ou b du premier joueur.
-     * @return char couleur du premier joueur.
-     */
-    public char getCouleurJoueur1() {
-        return couleurJoueur1;
-    }
-
-
-    /**
-     * Retourne la couleur n ou b du deuxième joueur.
-     * @return char couleur du deuxième joueur.
-     */
-    public char getCouleurJoueur2() {
-        return couleurJoueur2;
     }
 }

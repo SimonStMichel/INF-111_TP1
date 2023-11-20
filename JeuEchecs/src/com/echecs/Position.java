@@ -12,8 +12,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * @since 2023-09-01
  */
 public class Position {
-    private char colonne;  //a à h
-    private byte ligne;    //0 à 7
+    private char colonne;  // a à h
+    private byte ligne;    // 0 à 7
 
     /**
      * Crée une position correspondant à une case d'un échiquier de jeu d'échecs.
@@ -41,7 +41,6 @@ public class Position {
      * @return boolean true si les 2 positions sont voisines, false sinon.
      */
     public boolean estVoisineDe(Position p) {
-        //throw new NotImplementedException();
         int diffColonne = Math.abs(this.getColonne() - p.getColonne());
         int diffLigne = Math.abs(this.getLigne() - p.getLigne());
 
@@ -54,10 +53,7 @@ public class Position {
      * @return boolean true si les 2 positions sont sur la même ligne, false sinon.
      */
     public boolean estSurLaMemeLigneQue(Position p) {
-
-        //throw new NotImplementedException();
         return this.getLigne() == p.getLigne();
-
     }
     /**
      * Indique si 2 positions sont sur la même colonne sur un échiquier.
@@ -66,10 +62,7 @@ public class Position {
      * @return boolean true si les 2 positions sont sur la même colonne, false sinon.
      */
     public boolean estSurLaMemeColonneQue(Position p) {
-
-        //throw new NotImplementedException();
         return this.getColonne() == p.getColonne();
-
     }
     /**
      * Indique si 2 positions sont sur la même diagonale sur un échiquier.
@@ -78,7 +71,6 @@ public class Position {
      * @return boolean true si les 2 positions sont sur la même diagonale, false sinon.
      */
     public boolean estSurLaMemeDiagonaleQue(Position p) {
-        //throw new NotImplementedException();
         int diffColonne = Math.abs(this.getColonne() - p.getColonne());
         int diffLigne = Math.abs(this.getLigne() - p.getLigne());
 

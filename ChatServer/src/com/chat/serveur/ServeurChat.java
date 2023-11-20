@@ -18,6 +18,7 @@ public class ServeurChat extends Serveur {
     private Vector<String> historiqueMessages = new Vector<>();
     private Vector<Invitation> historiqueInvitations = new Vector<>();
     private Vector<SalonPrive> salonPrivesActifs = new Vector<>();
+    private Vector<Invitation> historiqueInvitationsParties = new Vector<>();
 
     /**
      * Crée un serveur de chat qui va écouter sur le port spécifié.
@@ -185,4 +186,29 @@ public class ServeurChat extends Serveur {
         }
         return false;
     }
+
+    /**
+     * Méthode qui retourne true si une invitation de partie existe
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public boolean invitationPartieExiste(Invitation invitation) {
+        for (Invitation inv : historiqueInvitationsParties) {
+            if(inv.getAliasInvite().equals(invitation.getAliasInvite())  && inv.getAliasHote().equals(invitation.getAliasHote())) return true;
+        }
+        return false;
+    }
+    /**
+     * Méthode qui supprime une invitation de partie de  l'historique des invitations des parties
+     *
+     * @param Invitation invitation Objet de type invitation
+     */
+    public void supprimerInvitationPartie(Invitation invitation) {
+        historiqueInvitationsParties.remove(invitation);
+    }
+
+    public void supprimerSalon(SalonPrive salon) {
+        salonPrivesActifs.remove(salon);
+    }
+
 }
